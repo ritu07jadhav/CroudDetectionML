@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Crowd Monitor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <nav class="topbar">
+    <div class="brand">Crowd Monitor</div>
+    <ul class="navlinks">
+      <li><a href="{{ url_for('live') }}" class="{{ 'active' if active=='live' else '' }}">Live</a></li>
+      <li><a href="{{ url_for('settings') }}" class="{{ 'active' if active=='settings' else '' }}">Settings</a></li>
+      <li><a href="{{ url_for('reports') }}" class="{{ 'active' if active=='reports' else '' }}">Reports</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for m in messages %}
+            <div class="flash-item">{{ m }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <small>YOLOv8 • Flask • MongoDB</small>
+  </footer>
+</body>
+</html>

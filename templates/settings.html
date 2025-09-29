@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Settings</h1>
+
+<div class="card">
+  <form class="form-grid" method="post" action="{{ url_for('settings') }}">
+    <div class="field">
+      <label>Location Name</label>
+      <input type="text" name="name" value="{{ loc.name }}" required>
+    </div>
+    <div class="field">
+      <label>Capacity</label>
+      <input type="number" name="capacity" min="1" value="{{ loc.capacity }}" required>
+    </div>
+    <div class="field">
+      <label>Source</label>
+      <input type="text" name="source" value="{{ loc.source }}" placeholder="0 for webcam or RTSP URL">
+    </div>
+    <div class="actions-left">
+      <button class="btn btn-save" type="submit">💾 Save</button>
+    </div>
+  </form>
+  <p class="muted">Saving stops the camera if it is running. Start it again from the Live page.</p>
+  
+</div>
+{% endblock %}

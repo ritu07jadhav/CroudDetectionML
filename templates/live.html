@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Live</h1>
+
+<!-- Audio to play on alert (served by app route alert_wav) -->
+<audio id="alert-audio" src="{{ url_for('alert_wav') }}" preload="auto"></audio>
+
+<div class="card">
+  <div class="live-meta">
+    <div><strong>Location:</strong> {{ loc.name }}</div>
+    <div><strong>Capacity:</strong> {{ loc.capacity }}</div>
+    <div><strong>Source:</strong> {{ loc.source }}</div>
+    <div>
+      <span class="badge {{ 'on' if running else 'off' }}">
+        {{ 'RUNNING' if running else 'STOPPED' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="preview">
+    {% if running %}
+      <img src="{{ url_for('stream') }}" alt="Live camera feed">
+    {% else %}
+      <div class="placeholder">Camera is stopped. Go to Settings to adjust, then press Start.</div>
+    {% endif %}
+  </div>
+
+  <div class="actions-center">
+    <form method="post" action="{{ url_for('start_camera') }}">
+      <button class="btn btn-start" type="submit">▶ Start</button>
+    </form>
+    <form method="post" action="{{ url_for('stop_camera') }}">
+      <button class="btn btn-stop" type="submit">⏹ Stop</button>
+    </form>
+  </div>
+</div>
+
+<!-- Alert polling script -->
+<script>
+  let lastAlert = false;
+  const audioEl = document.getElementById('alert-audio');
+
+  async function checkAlert() {
+    try {
+      const res = await fetch("{{ url_for('alert_status') }}", { cache: 'no-store' });
+      const data = await res.json();
+      const isAlert = !!data.alert;
+
+      // Play sound when transitioning from non-alert -> alert
+      if (isAlert && !lastAlert) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(()=>{ /* may need user interaction in some browsers */ });
+      }
+      lastAlert = isAlert;
+    } catch (e) {
+      // Silent fail to avoid UI spam
+      console && console.warn && console.warn("Alert check failed:", e);
+    }
+  }
+
+  // Poll every second
+  setInterval(checkAlert, 1000);
+  // Initial check
+  checkAlert();
+</script>
+{% endblock %}

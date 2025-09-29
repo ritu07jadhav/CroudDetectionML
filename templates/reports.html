@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Reports</h1>
+
+<div class="card">
+  <form class="inline-form" method="post" action="{{ url_for('reports') }}">
+    <label>Hours:</label>
+    <input type="number" name="hours" min="1" value="2">
+    <button class="btn btn-report" type="submit">📊 Generate CSV</button>
+  </form>
+  <p class="muted">Generates average people per minute CSV for the selected time window.</p>
+</div>
+
+<div class="card">
+  <h2>Previous Reports ({{ loc.name }})</h2>
+  {% if reports %}
+    <div class="table">
+      <div class="thead">
+        <div>Created At (UTC)</div>
+        <div>Range (h)</div>
+        <div>Rows</div>
+        <div>File</div>
+        <div>Download</div>
+      </div>
+      {% for r in reports %}
+      <div class="trow">
+        <div>{{ r.created_at }}</div>
+        <div>{{ r.range_hours }}</div>
+        <div>{{ r.rows }}</div>
+        <div class="filename">{{ r.file }}</div>
+        <div><a class="btn btn-small" href="{{ url_for('download_report', filename=r.file) }}">Download</a></div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No reports yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

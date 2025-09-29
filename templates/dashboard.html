@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="card">
+  <h2>Settings</h2>
+  <form class="form-grid" method="post" action="{{ url_for('save_settings') }}">
+    <div class="field">
+      <label>Name</label>
+      <input type="text" name="name" value="{{ loc.name }}" required>
+    </div>
+    <div class="field">
+      <label>Capacity</label>
+      <input type="number" name="capacity" min="1" value="{{ loc.capacity }}" required>
+    </div>
+    <div class="field">
+      <label>Source</label>
+      <input type="text" name="source" value="{{ loc.source }}"
+             placeholder='0 (webcam) or rtsp://user:pass@ip:554/path'>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit">Save</button>
+    </div>
+  </form>
+  <p class="muted">Tip: Saving settings will stop the camera if it was running. Press Start again.</p>
+</div>
+
+<div class="card">
+  <h2>Live</h2>
+  <div class="live-row">
+    <div class="preview">
+      {% if running %}
+        <img src="{{ url_for('stream') }}" alt="Live stream">
+      {% else %}
+        <div class="placeholder">
+          Camera is stopped. Click <strong>Start</strong> to begin.
+        </div>
+      {% endif %}
+    </div>
+    <div class="controls">
+      <form method="post" action="{{ url_for('start_camera') }}">
+        <button class="btn" type="submit">Start</button>
+      </form>
+      <form method="post" action="{{ url_for('stop_camera') }}">
+        <button class="btn secondary" type="submit">Stop</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Reports</h2>
+  <form class="inline-form" method="post" action="{{ url_for('generate_report') }}">
+    <label>Hours:</label>
+    <input type="number" name="hours" min="1" value="2">
+    <button class="btn small" type="submit">Generate CSV</button>
+  </form>
+  <p class="muted">A CSV file (average count per minute) will be saved and logged in the database.</p>
+</div>
+{% endblock %}
